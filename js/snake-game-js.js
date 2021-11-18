@@ -1,3 +1,6 @@
+// WHAT YOU'RE DOING NOW:
+// https://thoughtbot.com/blog/html5-canvas-snake-game#eat-food-grow-longer
+
 console.log("test");
 
 const snakeboard = document.getElementById("gameCanvas");
@@ -6,21 +9,9 @@ const ctx = snakeboard.getContext("2d");
 let x = 200;
 let y = 200;
 let head = [x, y];
+let snakeBody = [];
 let gridSize = 10;
 let direction = 'right';
-// setInterval(moveSnake, 1000);
-
-// ctx.fillStyle = "#1e9833";
-// ctx.fillRect(x, y, gridSize, gridSize);
-
-function drawHead(){
-	ctx.fillStyle = '#ffd500';
-	ctx.strokeStyle = 'rgb(229,182,38)';
-	ctx.fillRect(head[0], head[1], gridSize, gridSize);
-	ctx.strokeRect(head[0], head[1], gridSize, gridSize);
-}
-
-drawHead();
 
 $(document).keydown(function(e){
 	switch(e.code){
@@ -45,6 +36,16 @@ $(document).keydown(function(e){
 			break;
 	}
 });
+
+function drawSnake(){
+	snakeBody.push([head[0], head[1]]);
+	ctx.fillStyle = '#ffd500';
+	ctx.fillRect(head[0], head[1], gridSize, gridSize);
+	if (snakeBody.length > 3) {
+		let removePart = snakeBody.shift();
+		ctx.clearRect(removePart[0], removePart[1], gridSize, gridSize);
+	}
+}
 
 function moveSnake() {
 	switch(direction){
@@ -91,7 +92,7 @@ function moveUp(){
 }
 
 function moveDown(){
-	if(down()>=0){
+	if(down()<=490){
 		executeMove('down', 1, down())
 	}
 }
@@ -103,7 +104,7 @@ function moveLeft(){
 }
 
 function moveRight(){
-	if(right()>=0){
+	if(right()<=490){
 		executeMove('right', 0, right())
 	}
 }
@@ -111,5 +112,16 @@ function moveRight(){
 function executeMove(dir, axType, axVal){
 	direction = dir;
 	head[axType] = axVal;
-	drawHead();
+	drawSnake();
 }
+
+// function makeFood() {
+// 	let foodPoint = [Math.floor(Math.random() * canvas.width), Math.floor(Math.random() * canvas.height)];
+//
+// 	ctx.fillStyle = "#ff0000";
+// 	ctx.fillRect(foodPoint[0], foodPoint[1], gridSize, gridSize);
+// }
+
+setInterval(moveSnake, 100);
+// makeFood();
+drawSnake();
