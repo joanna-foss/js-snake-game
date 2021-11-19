@@ -1,10 +1,5 @@
-// WHAT YOU'RE DOING NOW:
-// https://thoughtbot.com/blog/html5-canvas-snake-game#eat-food-grow-longer
-
-console.log("test");
-
 const snakeboard = document.getElementById("gameCanvas");
-const ctx = snakeboard.getContext("2d");
+const c = snakeboard.getContext("2d");
 
 let x = 200;
 let y = 200;
@@ -12,60 +7,63 @@ let head = [x, y];
 let snakeBody = [];
 let gridSize = 10;
 let direction = 'right';
+let snakeLength = 2;
+let foodPoint = [];
+let boardWidth = 490;
+let boardHeight = 490;
+let time = 150;
 
 $(document).keydown(function(e){
 	switch(e.code){
 		case ('ArrowUp'):
-			console.log("You pressed up!");
 			direction = 'up';
 			break;
 		case ('ArrowRight'):
-			console.log("You pressed right!");
 			direction = 'right';
 			break;
 		case ('ArrowDown'):
-			console.log("You pressed down!");
 			direction = 'down';
 			break;
 		case ('ArrowLeft'):
-			console.log("You pressed left!");
 			direction = 'left';
 			break;
 		default:
-			console.log("You pressed a key!");
 			break;
 	}
 });
 
 function drawSnake(){
 	snakeBody.push([head[0], head[1]]);
-	ctx.fillStyle = '#ffd500';
-	ctx.fillRect(head[0], head[1], gridSize, gridSize);
-	if (snakeBody.length > 3) {
+	c.fillStyle = '#ffd500';
+	c.fillRect(head[0], head[1], gridSize, gridSize);
+	if (snakeBody[0][0] === foodPoint[0] && snakeBody[0][1] === foodPoint[1]){
+		snakeLength += 1;
+		$('#score').html((snakeLength * 10) - 20);
+		console.log("Nom nom nom...");
+		drawFood();
+	}
+	if (snakeBody.length > snakeLength) {
 		let removePart = snakeBody.shift();
-		ctx.clearRect(removePart[0], removePart[1], gridSize, gridSize);
+		c.clearRect(removePart[0], removePart[1], gridSize, gridSize);
+		console.log(snakeBody[0]);
 	}
 }
 
 function moveSnake() {
 	switch(direction){
-		case 'up': {
+		case 'up':
 			moveUp();
 			break;
-		}
-		case 'right': {
+		case 'right':
 			moveRight();
 			break;
-		}
-		case 'down': {
+		case 'down':
 			moveDown();
 			break;
-		}
-		case 'left': {
+		case 'left':
 			moveLeft();
 			break;
-		}
-		default: {console.log('none');}
+		default: break;
 	}
 };
 
@@ -92,7 +90,7 @@ function moveUp(){
 }
 
 function moveDown(){
-	if(down()<=490){
+	if(down()<=boardHeight){
 		executeMove('down', 1, down())
 	}
 }
@@ -104,7 +102,7 @@ function moveLeft(){
 }
 
 function moveRight(){
-	if(right()<=490){
+	if(right()<=boardWidth){
 		executeMove('right', 0, right())
 	}
 }
@@ -115,13 +113,16 @@ function executeMove(dir, axType, axVal){
 	drawSnake();
 }
 
-// function makeFood() {
-// 	let foodPoint = [Math.floor(Math.random() * canvas.width), Math.floor(Math.random() * canvas.height)];
-//
-// 	ctx.fillStyle = "#ff0000";
-// 	ctx.fillRect(foodPoint[0], foodPoint[1], gridSize, gridSize);
-// }
+function drawFood() {
+	foodPoint = [Math.ceil((Math.random() * boardWidth)/10) * 10, Math.ceil((Math.random() * boardWidth)/10) * 10];
+	if(snakeBody.some((elem) => elem[0] === foodPoint[0] && elem[1] === foodPoint[1])){
+		drawFood();
+	} else {
+		c.fillStyle = '#ff0000';
+		c.fillRect(foodPoint[0], foodPoint[1], 8, 8);
+	}
+}
 
-setInterval(moveSnake, 100);
-// makeFood();
+setInterval(moveSnake, time);
+drawFood();
 drawSnake();
