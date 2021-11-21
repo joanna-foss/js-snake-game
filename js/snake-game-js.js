@@ -11,7 +11,7 @@ let snakeLength = 2;
 let foodPoint = [];
 let boardWidth = 490;
 let boardHeight = 490;
-let time = 150;
+let time = 100;
 
 $(document).keydown(function(e){
 	switch(e.code){
@@ -36,20 +36,19 @@ function drawSnake(){
 	snakeBody.push([head[0], head[1]]);
 	c.fillStyle = '#ffd500';
 	c.fillRect(head[0], head[1], gridSize, gridSize);
-	if (snakeBody[0][0] === foodPoint[0] && snakeBody[0][1] === foodPoint[1]){
+	if (snakeBody.length > snakeLength) {
+		let removePart = snakeBody.shift();
+		c.clearRect(removePart[0], removePart[1], gridSize, gridSize);
+	}
+}
+
+function moveSnake() {
+	if (checkForEat()){
 		snakeLength += 1;
 		$('#score').html((snakeLength * 10) - 20);
 		console.log("Nom nom nom...");
 		drawFood();
 	}
-	if (snakeBody.length > snakeLength) {
-		let removePart = snakeBody.shift();
-		c.clearRect(removePart[0], removePart[1], gridSize, gridSize);
-		console.log(snakeBody[0]);
-	}
-}
-
-function moveSnake() {
 	switch(direction){
 		case 'up':
 			moveUp();
@@ -123,6 +122,10 @@ function drawFood() {
 	}
 }
 
+function checkForEat(){
+	return head[0] === foodPoint[0] && head[1] === foodPoint[1];
+}
+
 setInterval(moveSnake, time);
-drawFood();
 drawSnake();
+drawFood();
