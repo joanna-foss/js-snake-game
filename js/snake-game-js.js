@@ -9,9 +9,11 @@ let gridSize = 10;
 let direction = 'right';
 let snakeLength = 2;
 let foodPoint = [];
-let boardWidth = 490;
-let boardHeight = 490;
+let boardWidth = 450;
+let boardHeight = 450;
 let time = 100;
+let offset = -10;
+let allowPlay = true;
 
 $(document).keydown(function(e){
 	switch(e.code){
@@ -46,8 +48,10 @@ function moveSnake() {
 	if (checkForEat()){
 		snakeLength += 1;
 		$('#score').html((snakeLength * 10) - 20);
-		console.log("Nom nom nom...");
 		drawFood();
+	}
+	if (checkForWallHit()){
+		gameOver();
 	}
 	switch(direction){
 		case 'up':
@@ -126,6 +130,25 @@ function checkForEat(){
 	return head[0] === foodPoint[0] && head[1] === foodPoint[1];
 }
 
-setInterval(moveSnake, time);
-drawSnake();
-drawFood();
+// function checkForBodyHit(){
+// 	return
+// }
+
+function checkForWallHit(){
+	return (head[0] === boardWidth || head[0] === 0 || head[1] === boardHeight || head[1] === 0);
+}
+
+function gameOver(){
+	let score = (snakeLength-2) * 10;
+	alert('Game over, pal. You scored: ' + score);
+	clearInterval(interval);
+	snakeBody = [];
+	snakeLength = 2;
+	allowPlay = false;
+}
+
+$('#lets-play').click(function(){
+	c.translate(offset, offset);
+	let interval = setInterval(moveSnake, time);
+	drawFood();
+});
