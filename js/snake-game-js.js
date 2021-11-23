@@ -1,19 +1,40 @@
 const snakeboard = document.getElementById("gameCanvas");
 const c = snakeboard.getContext("2d");
 
-let x = 200;
-let y = 200;
-let head = [x, y];
-let snakeBody = [];
-let gridSize = 10;
-let direction = 'right';
-let snakeLength = 2;
-let foodPoint = [];
-let boardWidth = 450;
-let boardHeight = 450;
-let time = 100;
+let x;
+let y;
+let head;
+let snakeBody;
+let gridSize;
+let direction;
+let snakeLength;
+let foodPoint;
+let boardWidth;
+let boardHeight;
+let time;
 let offset = -10;
-let allowPlay = true;
+let allowPlay;
+let interval;
+
+c.translate(offset, offset) 
+
+$('#lets-play').click(function(){
+	c.clearRect(0, 0, boardWidth, boardHeight);
+	x = 200;
+	y = 200;
+	head = [x, y];
+	snakeBody = [];
+	gridSize = 10;
+	direction = 'right';
+	snakeLength = 2;
+	foodPoint = [];
+	boardWidth = 450;
+	boardHeight = 450;
+	time = 100;
+	allowPlay = true;
+	interval = setInterval(moveSnake, time);
+	drawFood();
+});
 
 $(document).keydown(function(e){
 	switch(e.code){
@@ -51,6 +72,9 @@ function moveSnake() {
 		drawFood();
 	}
 	if (checkForWallHit()){
+		gameOver();
+	}
+	if (checkForBodyHit()){
 		gameOver();
 	}
 	switch(direction){
@@ -117,7 +141,10 @@ function executeMove(dir, axType, axVal){
 }
 
 function drawFood() {
-	foodPoint = [Math.ceil((Math.random() * boardWidth)/10) * 10, Math.ceil((Math.random() * boardWidth)/10) * 10];
+	let a = Math.ceil((Math.random() * (boardWidth-20)+10)/10) * 10;
+	let b = Math.ceil((Math.random() * (boardHeight-20)+10)/10) * 10;
+	foodPoint = [a, b];
+	console.log("foodPoint: " + foodPoint);
 	if(snakeBody.some((elem) => elem[0] === foodPoint[0] && elem[1] === foodPoint[1])){
 		drawFood();
 	} else {
@@ -130,9 +157,17 @@ function checkForEat(){
 	return head[0] === foodPoint[0] && head[1] === foodPoint[1];
 }
 
-// function checkForBodyHit(){
-// 	return
-// }
+function checkForBodyHit(){
+	let hit = false;
+	for(let i = snakeBody.length-2; i >=0; --i){
+		console.log("snakeBody: " + snakeBody[i][0] + " " + snakeBody[i][1]);
+		console.log("head: " + head[0] + " " + head[1]);
+		if(snakeBody[i][0] === head[0] && snakeBody[i][1] === head[1]){
+			hit = true;
+		}
+	}
+	return hit;
+}
 
 function checkForWallHit(){
 	return (head[0] === boardWidth || head[0] === 0 || head[1] === boardHeight || head[1] === 0);
@@ -145,10 +180,5 @@ function gameOver(){
 	snakeBody = [];
 	snakeLength = 2;
 	allowPlay = false;
+	$('#score').html("");
 }
-
-$('#lets-play').click(function(){
-	c.translate(offset, offset);
-	let interval = setInterval(moveSnake, time);
-	drawFood();
-});
